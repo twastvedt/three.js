@@ -520,9 +520,15 @@ THREE.GLTFLoader = ( function () {
 
 		return parser.getDependency( 'bufferView', bufferViewIndex ).then( function ( bufferView ) {
 
-			return new Promise( function ( resolve ) {
+			return new Promise( function ( resolve, reject ) {
 
-				dracoLoader.decodeDracoFile( bufferView, function ( geometry ) {
+				var taskConfig = {
+					attributeIDs: threeAttributeMap,
+					attributeTypes: attributeTypeMap,
+					useUniqueIDs: !! threeAttributeMap
+				};
+
+				dracoLoader.decodeGeometry( bufferView, taskConfig ).then( function ( geometry ) {
 
 					for ( var attributeName in geometry.attributes ) {
 
@@ -535,7 +541,7 @@ THREE.GLTFLoader = ( function () {
 
 					resolve( geometry );
 
-				}, threeAttributeMap, attributeTypeMap );
+				} ).catch( reject );
 
 			} );
 
